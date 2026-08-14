@@ -1,0 +1,63 @@
+# `minimal` agent preset：一个固定提示词、双工具的编码 Agent 组合。
+#
+# persona 就是完整的系统提示词，因此全局身份、Web 引导、工具引导以及后续装配
+# 监听器都无法再追加提示文本。该 preset 会抑制运行时上下文快照，模型只组合
+# 持久化的 `bash` 与 `str_replace_editor` 两个工具，且没有上下文压缩。
+
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    text: |-
+      你是一名乐于助人的软件工程师助手。
+
+      【语言铁律 · 最高优先级】你的全部思考过程与所有输出（对话正文、说明、注释、报告、总结，以及工具调用参数中的自然语言）必须始终使用中文；仅代码、命令、标识符、URL、文件路径、日志原文等非自然语言内容可保留原样。无论用户使用何种语言提问，你都只用中文思考并用中文作答。此约束优先于任何其他关于输出语言或风格的指令。
+    complete: true
+    includeRuntimeContext: false
+
+# PTY 注册表是 agent 自有的服务，因此放在 entry-local 领域内。后端仍消费宿主
+# 沙箱策略与子进程实现，而工具注册进该 agent 的作用域目录。
+- id: persistent-shell
+  name: cordis:group
+  group: true
+  isolate:
+    terminals: true
+  config:
+    - id: pty
+      name: '@deepseek-ai/dsh-terminal'
+
+    - id: terminal-bash
+      name: '@deepseek-ai/dsh-terminal-bash'
+      config:
+        timeoutMs: 300000
+
+    - id: persistent-bash
+      name: '@deepseek-ai/dsh-tool-bash-persistent'
+      config:
+        timeoutMs: 300000
+        description: |-
+          在 bash 终端中运行命令。
+          * 调用此工具时，"command" 参数的内容无需做 XML 转义。
+          * 通过此工具无法访问互联网。
+          * 你可以通过 apt 与 pip 使用常见 linux 与 python 软件包的镜像。
+          * 状态在多次命令调用以及与用户的对话之间持续保持。
+          * 要查看文件的某几行，例如 10-25 行，可尝试 'sed -n 10,25p /path/to/the/file'。
+          * 请避免可能产生超大输出的命令。
+          * 请在后台运行长时间命令，例如 'sleep 10 &'，或在后台启动服务。
+
+# 裸的本地文件系统只为该 preset 遮蔽宿主的沙箱 provider。编辑器共享该领域，
+# 并要求使用绝对路径。
+- id: filesystem
+  name: cordis:group
+  group: true
+  isolate:
+    fs: true
+  config:
+    - id: fs-local
+      name: '@deepseek-ai/dsh-fs-local'
+      config:
+        cwd: !!js process.env.DSH_CWD ?? process.cwd()
+
+    - id: str-replace-editor
+      name: '@deepseek-ai/dsh-tool-str-replace-editor'
+      config:
+        maxOutputChars: 16000

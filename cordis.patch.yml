@@ -1,0 +1,18 @@
+# dsh-zh-output：DeepSeek Harness 中文输出组合包。
+#
+# 本组合包把「中文预设」目录（presets/）登记进 agent-presets 名单。
+#
+# 重要说明：标准 web/headless CLI 的 composeProfile 会把 agent-presets 的 roots
+# 强制改写为内置预设根（shipped root），因此通过 `dsh plugin add` 安装本包、
+# 再用标准 CLI 启动时，这里的 roots 会被覆盖而不生效。此时请改用 README 中的
+# 「复制到 $DSH_HOME/.agent-presets/」方式安装。
+#
+# 在自行组合 host 的部署（例如 Python SDK 运行时、自定义 launcher，或任何未走
+# composeProfile 的主机组合）中，本 roots 配置会正常生效，直接提供中文预设。
+- id: agent-presets
+  name: '@deepseek-ai/dsh-agent-presets'
+  config:
+    default: standard
+    roots:
+      - path: !!js "process.getBuiltinModule('node:url').fileURLToPath(new URL('presets/', baseUrl))"
+        trust: system
