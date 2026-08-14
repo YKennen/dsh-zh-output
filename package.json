@@ -3,9 +3,14 @@
   "version": "0.1.0",
   "description": "DeepSeek Harness 中文输出插件：提供强制「中文思考与输出」的中文预设（标准 / PTC / 极简 / 创造四种模式的中文版）。",
   "type": "module",
+  "exports": {
+    "./zh-compaction": "./lib/zh-compaction.js",
+    "./package.json": "./package.json"
+  },
   "files": [
     "cordis.patch.yml",
-    "presets"
+    "presets",
+    "lib"
   ],
   "license": "MIT",
   "dsh": {
