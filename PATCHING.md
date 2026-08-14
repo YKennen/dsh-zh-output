@@ -25,6 +25,8 @@ DeepSeek Harness 的上下文压缩在生成检查点时，消息由两段组成
 
 其中 `harness` 通常是 `%APPDATA%\npm\node_modules\@deepseek-ai\dsh`。
 
+> 说明：标准 CLI 部署下，`<DSH_HOME>\profiles\node_modules\@deepseek-ai\dsh-compaction-basic` 是一个 junction，指向上面全局 npm 位置的同一个包——因此改这里（补丁脚本也是定位到这里）就等于改运行时实际加载的文件。
+
 要改的是文件里这一行（`CHECKPOINT_PREAMBLE` 的赋值）：
 
 - **英文原文**：

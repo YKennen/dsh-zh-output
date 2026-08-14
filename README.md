@@ -69,13 +69,13 @@ DeepSeek Harness 的上下文压缩（`/compact` 或自动压缩）在生成检�
 
 ### 部署中文压缩引擎
 
-插件需要 `import` 官方 `@deepseek-ai/dsh-compaction-basic` 与 `@deepseek-ai/dsh-llm`，而这两个包只存在于已安装 harness 的内部 `node_modules`，所以插件必须放进 harness 能解析到依赖的位置——最可靠的是 harness 自身的私有 `node_modules`。仓库根目录的 `deploy.ps1` 会自动完成这一步，并同步预设：
+插件需要 `import` 官方 `@deepseek-ai/dsh-compaction-basic` 与 `@deepseek-ai/dsh-llm`。标准 CLI 部署下，preset 里的 bare specifier 是从 `profiles` 目录向上在 pnpm 的 hoisted 依赖目录（`<DSH_HOME>\profiles\node_modules`）解析的，所以中文压缩引擎必须放在那里，才能被 preset 找到、并解析到官方依赖。仓库根目录的 `deploy.ps1` 会自动完成这一步，并同步预设：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\deploy.ps1
 ```
 
-脚本会：把 `lib/zh-compaction.js` 复制为 `<harness>\node_modules\dsh-zh-compaction\index.js`（并生成包描述），再把 `presets\` 同步到你的用户预设目录。完成后**重启 dsh web** 生效。
+脚本会：把 `lib/zh-compaction.js` 部署为 `<DSH_HOME>\profiles\node_modules\dsh-zh-compaction\`（并生成包描述），再把 `presets\` 同步到你的用户预设目录。完成后**重启 dsh web** 生效。若之后执行过 `pnpm install`（会重建 hoisted 目录、清掉手动放入的包），重跑本脚本即可。
 
 ### 已知限制：checkpoint 前言默认仍为英文（可选补丁）
 
