@@ -15,8 +15,9 @@
 | `code-zh`     | PTC 模式（中文）  | `code`      |
 | `minimal-zh`  | 极简模式（中文）  | `minimal`   |
 | `cordis-zh`   | 创造模式（中文）  | `cordis`    |
+| `router-standard-zh` | 路由标准模式（中文，实验性） | `router-standard`（自定义） |
 
-每个预设都基于官方预设完整复制而来，仅改动人设（persona）、计划模式提示词与注释，功能与官方版本一致。
+前四个预设基于官方预设完整复制而来，仅改动人设（persona）、计划模式提示词与注释，功能与官方版本一致。`router-standard-zh` 基于你自定义的 `router-standard`（任务感知路由）实验预设：保留 router 的机制与工具（`dev_router_status` / `dev_router_mode` / `dev_mode_subagent`），仅把注入给模型的所有自然语言（人设、模式 persona、路由指导、工具描述）中文化并加入「语言铁律」，压缩引擎同样使用中文版 `dsh-zh-compaction`。
 
 ## 安装
 
@@ -96,11 +97,12 @@ powershell -ExecutionPolicy Bypass -File .\deploy.ps1
 dsh-zh-output/
 ├── package.json       # 声明 dsh.bundle（组合包标记）
 ├── cordis.patch.yml   # 组合包补丁层：登记中文预设根
-├── presets/           # 四个中文预设
+├── presets/           # 中文预设
 │   ├── standard-zh/
 │   ├── code-zh/
 │   ├── minimal-zh/
-│   └── cordis-zh/     # 含 skills/
+│   ├── cordis-zh/     # 含 skills/
+│   └── router-standard-zh/  # 路由标准模式（中文，实验性，含 router 插件）
 ├── lib/
 │   └── zh-compaction.js  # 中文上下文压缩引擎
 ├── deploy.ps1            # 一键部署脚本（部署压缩引擎 + 同步预设）
